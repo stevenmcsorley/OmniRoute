@@ -1,0 +1,27 @@
+Passenger Mobile App Endpoints and Functionality:
+
+User Authentication
+
+POST /api/passenger/login: Log in the passenger worker using their unique ID.
+Route Selection and Ticket Booking
+
+GET /api/passenger/routes?workerId={workerId}: Get a list of routes associated with the worker's company and display them in the app.
+POST /api/passenger/bookings: Create a new booking for the selected route and the logged-in worker. This will generate a ticket and associate it with the worker.
+GET /api/passenger/bookings?workerId={workerId}: Get a list of all bookings for the logged-in worker.
+QR Code Retrieval
+
+GET /api/passenger/qr-code?bookingId={bookingId}: Get the QR code for a specific booking ID. The passenger can retrieve their QR code from this endpoint.
+Driver Mobile App Endpoints and Functionality:
+
+User Authentication
+
+POST /api/driver/login: Log in the driver using their driver ID.
+Assigned Routes and Passengers
+
+GET /api/driver/routes?driverId={driverId}: Get a list of routes assigned to the driver's company and display them in the app.
+GET /api/driver/passengers?routeId={routeId}: Get a list of passengers who have booked tickets for the selected route. Display their information in the app, including their boarding status.
+Passenger Onboarding
+
+POST /api/driver/scan-qr-code: Scan the QR code from the passenger's ticket. This endpoint validates the QR code, updates the passenger's boarding status to "Onboarded," and returns the updated passenger list for the route.
+By implementing these endpoints and functionality, the worker can log in to the passenger app using their unique ID, view available routes associated with their company, book tickets for a route, and retrieve their QR code. The driver can log in to the driver app using their driver ID, view their assigned routes for the company they are associated with, see the list of passengers for each route, and onboard passengers by scanning their QR codes. The passenger app and driver app can communicate with the backend API to retrieve and update data as necessary.
+

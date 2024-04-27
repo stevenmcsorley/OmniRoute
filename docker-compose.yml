@@ -1,0 +1,95 @@
+version: "3.3"
+
+services:
+  traefik:
+    image: arm64v8/traefik:v2.0
+    restart: always
+    container_name: traefik
+    ports:
+      - "80:80"
+      - "443:443"
+    command:
+      - --api.insecure=false       # Disable insecure API
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443   # Enable HTTPS on port 443
+      - --certificatesresolvers.myresolver.acme.tlschallenge=true   # Enable ACME for automatic SSL certificates
+      - --certificatesresolvers.myresolver.acme.email=smcsorl@gmail.com   # Your email for Let's Encrypt
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json   # Path to store ACME certificates
+      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web   # Use HTTP challenge for verification
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./letsencrypt:/letsencrypt   # Volume for storing ACME certificates
+    networks:
+      - proxy
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`monitor.localhost`)"
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"   # Add redirect middleware to enforce HTTPS
+      - "traefik.http.routers.http-catchall.rule=HostRegexp(`{host:.+}`)"   # Catch-all router for HTTP requests
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+  db:
+    image: biarms/mysql:5.7.30
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - backend
+  frontend:
+    container_name: frontend
+    build: ./admin-web-app
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - proxy
+      - backend
+    labels:
+      traefik.enable: true
+      traefik.http.routers.frontend-main.rule: "Host(`webapp.localhost`)"
+      traefik.http.routers.frontend-main.entrypoints: web
+      traefik.http.routers.frontend-main.service: "frontend-main"
+      traefik.http.services.frontend-main.loadbalancer.server.port: "3000"
+  backend:
+    container_name: backend
+    build: ./backend
+    depends_on:
+      - db
+    labels:
+      traefik.enable: true
+      traefik.http.routers.backend.rule: Host(`backend.localhost`)  # Route to backend service needs to be remote when testing the apps ( a shameful todo)
+      traefik.http.routers.backend.entrypoints: web   # Use websecure entrypoint for HTTPS
+      traefik.http.routers.backend.service: "backend"
+      traefik.http.services.backend.loadbalancer.server.port: "3001"
+    networks:
+      - proxy
+      - backend
+  adminer:
+    container_name: adminer
+    image: adminer
+    restart: always
+    labels:
+      traefik.http.routers.adminer.entrypoints: "web"
+      traefik.http.routers.adminer.rule: "Host(`adminer.localhost`)"
+      traefik.http.routers.adminer.service: "adminer"
+      traefik.http.services.adminer.loadbalancer.server.port: "8080"
+      traefik.enable: "true"
+    networks:
+      - proxy
+      - backend
+networks:
+  proxy:
+    name: "proxy"
+  backend: 
+    name: "backend"
+volumes:
+  dbdata:

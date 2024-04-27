@@ -1,0 +1,9 @@
+http:
+  routers:
+    backend:
+      rule: Host(`backend.localhost`)
+      entryPoints:
+        - web
+      service: backend
+      middlewares:
+        - redirect

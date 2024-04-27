@@ -1,0 +1,13 @@
+---
+api:
+  dashboard: true
+  debug: true
+
+serversTransport:
+  insecureSkipVerify: true
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
