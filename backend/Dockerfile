@@ -14,7 +14,7 @@ RUN npm i
 COPY . .
 
 # Expose the port the application will run on
-EXPOSE 3001
+EXPOSE 4000
 
 # Start the Express application
 CMD ["node", "app.js"]

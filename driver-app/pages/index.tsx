@@ -1,10 +1,11 @@
+// index.tsx
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import { loginWorker } from '../apiRepo/workerApi';
+import { loginEmployee } from '../apiRepo/employeeApi';
 import { Page, Navbar, Block, List, ListInput, Button, BlockTitle } from 'konsta/react';
 
 function Login() {
-  const [workerId, setWorkerId] = useState("");
+  const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
@@ -12,13 +13,12 @@ function Login() {
     e.preventDefault();
 
     try {
-      const workerIdNumber = parseInt(workerId);
-      const response = await loginWorker(workerIdNumber);
-      localStorage.setItem('workerId', workerId);
+      const response = await loginEmployee(email);
+      localStorage.setItem('employee', JSON.stringify(response.employee));
       router.push('/dashboard');
     } catch (error) {
       console.error(error);
-      setErrorMessage('Worker login failed.');
+      setErrorMessage('Login failed. ' + (error.response?.data?.error || ''));
     }
   };
 
@@ -26,15 +26,15 @@ function Login() {
     <Page>
       <Navbar title="Login" />
       <Block strong className="p-4">
-        <BlockTitle className="mb-4 text-lg font-semibold">Worker Login</BlockTitle>
+        <BlockTitle className="mb-4 text-lg font-semibold">Driver Login</BlockTitle>
         <form onSubmit={handleLogin} className="flex flex-col">
           <List inset>
             <ListInput
-              label="Worker ID"
-              type="text"
-              placeholder="Enter Worker ID"
-              value={workerId}
-              onInput={(e) => setWorkerId((e.target as HTMLInputElement).value)}
+              label="Email"
+              type="email"
+              placeholder="Enter Email"
+              value={email}
+              onInput={(e) => setEmail((e.target as HTMLInputElement).value)}
             />
           </List>
           <Button className="mb-4">

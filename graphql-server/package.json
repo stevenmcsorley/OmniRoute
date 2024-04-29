@@ -1,0 +1,27 @@
+{
+  "name": "graphql-server",
+  "version": "1.0.0",
+  "description": "GraphQL Server with Subscriptions for real-time updates",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "graphql",
+    "subscriptions",
+    "real-time",
+    "apollo-server"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "^3.13.0",
+    "apollo-server-express": "^3.13.0", 
+    "graphql": "^16.8.1",
+    "subscriptions-transport-ws": "^0.11.0",
+    "graphql-subscriptions": "^2.0.0",
+    "mysql2": "^2.3.3", 
+    "express": "^4.18.1"
+  }
+}

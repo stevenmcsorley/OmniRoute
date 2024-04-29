@@ -72,3 +72,51 @@ CREATE TABLE IF NOT EXISTS Passengers (
     FOREIGN KEY (CompanyId) REFERENCES Companies(Id)
 );
 
+--- new tabnles
+
+CREATE TABLE IF NOT EXISTS Resources (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    CompanyId INT NOT NULL,
+    Identifier VARCHAR(255), -- Such as license plate, room number, or table name
+    Type ENUM('Vehicle', 'Room', 'Table', 'Equipment', 'Other'), -- Defines the type of resource
+    Capacity INT, -- Could represent seating capacity or limit on number of users
+    FOREIGN KEY (CompanyId) REFERENCES Companies(Id)
+);
+
+
+CREATE TABLE IF NOT EXISTS Employees (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    CompanyId INT NOT NULL,
+    FirstName VARCHAR(255),
+    LastName VARCHAR(255),
+    Email VARCHAR(255),
+    Phone VARCHAR(255),
+    Role ENUM('Driver', 'EventManager', 'Waitstaff', 'Support', 'Other'),
+    FOREIGN KEY (CompanyId) REFERENCES Companies(Id)
+);
+
+
+CREATE TABLE IF NOT EXISTS Assignments (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    ResourceId INT NOT NULL,
+    EmployeeId INT NOT NULL,
+    StartTime DATETIME,
+    EndTime DATETIME,
+    Status ENUM('Scheduled', 'Active', 'Completed', 'Cancelled'),
+    FOREIGN KEY (ResourceId) REFERENCES Resources(Id),
+    FOREIGN KEY (EmployeeId) REFERENCES Employees(Id)
+);
+
+
+CREATE TABLE IF NOT EXISTS Reservations (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    ResourceId INT NOT NULL,
+    EmployeeId INT, -- Optional, if an employee is linked to the reservation
+    CustomerId INT, -- This might refer to a record in another customer-specific table
+    StartTime DATETIME,
+    EndTime DATETIME,
+    Status ENUM('Pending', 'Confirmed', 'Cancelled'),
+    FOREIGN KEY (ResourceId) REFERENCES Resources(Id),
+    FOREIGN KEY (EmployeeId) REFERENCES Employees(Id) -- Nullable
+);
+

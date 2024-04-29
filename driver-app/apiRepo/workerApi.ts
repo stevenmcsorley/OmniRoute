@@ -1,4 +1,5 @@
-const API_URL = 'https://backendtwo.torywatch.uk/api';
+// const API_URL = 'https://backend.localhost/api';
+const API_URL = 'http://backend.localhost/api';
 
 interface LoginRequest {
     workerId: number;
@@ -88,7 +89,7 @@ export const getWorkerBookings = async (workerId: number): Promise<Booking[]> =>
   return response.json();
 };
 
-// https://backendtwo.torywatch.uk/api/worker/details?workerId=5
+// https://backend.localhost/api/worker/details?workerId=5
 // pulls back this
 
 // {
