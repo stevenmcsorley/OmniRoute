@@ -101,8 +101,8 @@ const Dashboard: React.FC = () => {
     try {
       await client.mutate({
         mutation: gql`
-          mutation SignupForAssignment($assignmentId: Int!, $employeeId: Int!, $companyId: Int!) {
-            signupForAssignment(assignmentId: $assignmentId, employeeId: $employeeId, companyId: $companyId) {
+          mutation UpdateAssignmentStatus($assignmentId: Int!, $status: String!, $companyId: Int!) {
+            updateAssignmentStatus(AssignmentId: $assignmentId, status: $status, CompanyId: $companyId) {
               AssignmentId
               ResourceId
               EmployeeId
@@ -112,7 +112,7 @@ const Dashboard: React.FC = () => {
             }
           }
         `,
-        variables: { assignmentId, employeeId: employee.EmployeeId, companyId: employee.CompanyId },
+        variables: { assignmentId, status: "Active", companyId: employee.CompanyId },
       });
       // No need to refetch assignments here since we're updating assignments state based on subscription
     } catch (error) {
@@ -125,8 +125,8 @@ const Dashboard: React.FC = () => {
     try {
       await client.mutate({
         mutation: gql`
-          mutation WithdrawFromAssignment($assignmentId: Int!, $companyId: Int!) {
-            withdrawFromAssignment(assignmentId: $assignmentId, companyId: $companyId) {
+          mutation UpdateAssignmentStatus($assignmentId: Int!, $status: String!, $companyId: Int!) {
+            updateAssignmentStatus(AssignmentId: $assignmentId, status: $status, CompanyId: $companyId) {
               AssignmentId
               ResourceId
               EmployeeId
@@ -136,13 +136,14 @@ const Dashboard: React.FC = () => {
             }
           }
         `,
-        variables: { assignmentId, companyId: employee.CompanyId },
+        variables: { assignmentId, status: "Cancelled", companyId: employee.CompanyId },
       });
       // No need to refetch assignments here since we're updating assignments state based on subscription
     } catch (error) {
       console.error('Error:', error);
     }
   };
+  
 
   if (!employee) return <div>Loading...</div>;
   if (loading) return <div>Loading assignments...</div>;
