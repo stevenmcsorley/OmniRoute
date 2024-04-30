@@ -5,7 +5,7 @@ import { useQuery, useSubscription, gql } from '@apollo/client';
 const GET_ASSIGNMENTS_QUERY = gql`
   query GetAssignments($companyId: Int!) {
     assignments(companyId: $companyId) {
-      Id
+      AssignmentId
       ResourceId
       EmployeeId
       StartTime
@@ -17,20 +17,20 @@ const GET_ASSIGNMENTS_QUERY = gql`
 
 // Define the GraphQL subscription for assignment updates
 const ASSIGNMENT_UPDATED_SUBSCRIPTION = gql`
-  subscription OnAssignmentUpdated($companyId: Int!) {
-    assignmentUpdated(companyId: $companyId) {
-      Id
-      ResourceId
-      EmployeeId
-      StartTime
-      EndTime
-      Status
-    }
+subscription OnAssignmentUpdated {
+  assignmentUpdated {
+    AssignmentId
+    ResourceId
+    EmployeeId
+    StartTime
+    EndTime
+    Status
   }
+}
 `;
 
 interface Assignment {
-  Id: number;
+  AssignmentId: number;
   ResourceId: number;
   EmployeeId: number | null;
   StartTime: string;
@@ -43,13 +43,13 @@ const AssignmentsAdmin: React.FC = () => {
 
   // Use the useQuery hook to fetch initial assignments
   const { loading, error, data } = useQuery(GET_ASSIGNMENTS_QUERY, {
-    variables: { companyId: 10 }, // Replace with the actual company ID as needed
+    variables: { companyId: 4 }, // Replace with the actual company ID as needed
   });
 
   // Use the useSubscription hook to listen for updates
   const { data: subscriptionData } = useSubscription(
     ASSIGNMENT_UPDATED_SUBSCRIPTION,
-    { variables: { companyId: 10 } } // Replace with the actual company ID as needed
+    { variables: { companyId: 4 } } // Replace with the actual company ID as needed
   );
 
   // Handle the initial data fetched by useQuery
@@ -64,14 +64,14 @@ const AssignmentsAdmin: React.FC = () => {
     if (subscriptionData && subscriptionData.assignmentUpdated) {
       setAssignments((prevAssignments) =>
         prevAssignments.map((assignment) =>
-          assignment.Id === subscriptionData.assignmentUpdated.Id ? subscriptionData.assignmentUpdated : assignment
+          assignment.AssignmentId === subscriptionData.assignmentUpdated.AssignmentId ? subscriptionData.assignmentUpdated : assignment
         )
       );
     }
   }, [subscriptionData]);
 
   const getStatusColor = (status: string) => {
-    switch(status) {
+    switch (status) {
       case 'Scheduled':
         return '#FFFF99'; // light yellow
       case 'Active':
@@ -105,8 +105,8 @@ const AssignmentsAdmin: React.FC = () => {
         </thead>
         <tbody>
           {assignments.map((assignment) => (
-            <tr key={assignment.Id} style={{ backgroundColor: getStatusColor(assignment.Status), color: 'black' }}>
-              <td>{assignment.Id}</td>
+            <tr key={assignment.AssignmentId} style={{ backgroundColor: getStatusColor(assignment.Status), color: 'black' }}>
+              <td>{assignment.AssignmentId}</td>
               <td>{assignment.ResourceId}</td>
               <td>{assignment.EmployeeId}</td>
               <td>{assignment.StartTime}</td>
@@ -114,8 +114,8 @@ const AssignmentsAdmin: React.FC = () => {
               <td>{assignment.Status}</td>
               <td>
                 {/* Example buttons for actions */}
-                {/* <button onClick={() => handleEdit(assignment.Id)}>Edit</button>
-                <button onClick={() => handleDelete(assignment.Id)}>Delete</button> */}
+                {/* <button onClick={() => handleEdit(assignment.AssignmentId)}>Edit</button>
+                <button onClick={() => handleDelete(assignment.AssignmentId)}>Delete</button> */}
               </td>
             </tr>
           ))}

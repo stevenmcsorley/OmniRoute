@@ -11,6 +11,7 @@ import Employees from './components/Employees';
 import ResourcesAdmin from './components/ResourcesAdmin';
 import AssignmentsAdmin from './components/AssignmentsAdmin';
 import ReservationsAdmin from './components/ReservationsAdmin';
+// import AssignmentSubscription from './components/AssignmentSubscription';
 import NotFound from './components/NotFound';
 import './App.css';
 
@@ -24,6 +25,7 @@ const App: React.FC = () => {
           <Link to="/resources">Resources</Link> |
           <Link to="/assignments">Assignments</Link> |
           <Link to="/reservations">Reservations</Link>
+          {/* <Link to="/assignment-subscription">Assignment Subscription</Link> */}
         </nav>
         <Routes>
           <Route path="/" element={<Dashboard />} />
@@ -31,6 +33,7 @@ const App: React.FC = () => {
           <Route path="/resources" element={<ResourcesAdmin />} />
           <Route path="/assignments" element={<AssignmentsAdmin />} />
           <Route path="/reservations" element={<ReservationsAdmin />} />
+          {/* <Route path="/assignment-subscription" element={<AssignmentSubscription />} /> */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

@@ -2,12 +2,13 @@ const { gql } = require('apollo-server-express');
 
 const typeDefs = gql`
   type Assignment {
-    Id: Int!
+    AssignmentId: Int!
     ResourceId: Int!
     EmployeeId: Int
     StartTime: String
     EndTime: String
     Status: String
+    CompanyId: Int!
   }
 
   type Query {
@@ -15,11 +16,12 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    updateAssignmentStatus(Id: Int!, Status: String!): Assignment
-  }
+    updateAssignmentStatus(AssignmentId: Int!, status: String!, CompanyId: Int!): Assignment
+}
+
 
   type Subscription {
-    assignmentUpdated(companyId: Int!): Assignment
+    assignmentUpdated: Assignment
   }
 `;
 

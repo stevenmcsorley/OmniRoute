@@ -516,45 +516,43 @@ app.delete("/api/employee/resources/withdraw", async (req, res) => {
 //   }
 // });
 
-// Fetch all assignments for the employee's company
+// API to get all assignments for a company
 app.get("/api/assignments/:companyId", async (req, res) => {
   const { companyId } = req.params;
   const connection = await pool.getConnection();
   try {
-    const [assignments] = await connection.query(`
-      SELECT a.*, r.Identifier AS ResourceIdentifier, r.Type AS ResourceType
-      FROM Assignments a
-      JOIN Resources r ON a.ResourceId = r.Id
-      WHERE r.CompanyId = ?
-    `, [companyId]);
-    connection.release();
+    const [assignments] = await connection.query("SELECT * FROM Assignments WHERE companyId = ?", [companyId]);
     res.json(assignments);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "An error occurred while fetching assignments." });
+    console.error("SQL Error: ", error);
+    res.status(500).json({ success: false, message: "Internal server error: " + error.message });
   } finally {
     connection.release();
   }
 });
 
+// API to assign an employee to an assignment
 app.post("/api/assignments/assign", async (req, res) => {
-  const { resourceId, employeeId, status = 'Active' } = req.body; // Default status
+  const { assignmentId, employeeId } = req.body;
   const connection = await pool.getConnection();
   try {
-    // Ensure 'status' is a valid ENUM option
-    const validStatuses = ['Scheduled', 'Active', 'Completed', 'Cancelled'];
-    if (!validStatuses.includes(status)) {
-      connection.release();
-      return res.status(400).json({ success: false, message: "Invalid status value" });
-    }
+    await connection.query("UPDATE Assignments SET EmployeeId = ?, Status = 'Active' WHERE AssignmentId = ?", [employeeId, assignmentId]);
+    res.json({ success: true, message: "Assignment successful" });
+  } catch (error) {
+    console.error("SQL Error: ", error);
+    res.status(500).json({ success: false, message: "Internal server error: " + error.message });
+  } finally {
+    connection.release();
+  }
+});
 
-    const sql = "UPDATE Assignments SET EmployeeId = ?, Status = ? WHERE Id = ? AND EmployeeId IS NULL";
-    const [result] = await connection.execute(sql, [employeeId, status, resourceId]);
-    if (result.affectedRows > 0) {
-      res.json({ success: true, message: "Assignment successful" });
-    } else {
-      res.status(400).json({ success: false, message: "Resource not available or already assigned" });
-    }
+// API to withdraw an employee from an assignment
+app.delete("/api/assignments/withdraw", async (req, res) => {
+  const { assignmentId } = req.body;
+  const connection = await pool.getConnection();
+  try {
+    await connection.query("UPDATE Assignments SET EmployeeId = NULL, Status = 'Cancelled' WHERE AssignmentId = ?", [assignmentId]);
+    res.json({ success: true, message: "Withdrawal successful" });
   } catch (error) {
     console.error("SQL Error: ", error);
     res.status(500).json({ success: false, message: "Internal server error: " + error.message });
@@ -564,25 +562,7 @@ app.post("/api/assignments/assign", async (req, res) => {
 });
 
 
-// API to withdraw an employee from a resource
-app.delete("/api/assignments/withdraw", async (req, res) => {
-  const { resourceId, employeeId } = req.body;
-  const sql = "UPDATE Assignments SET EmployeeId = NULL, Status = 'Cancelled' WHERE Id = ? AND EmployeeId = ?";
-  const connection = await pool.getConnection();
-  try {
-      const [result] = await connection.execute(sql, [resourceId, employeeId]);
-      if (result.affectedRows > 0) {
-          res.send({ success: true, message: "Withdrawal successful" });
-      } else {
-          res.status(400).send({ success: false, message: "No such assignment found" });
-      }
-  } catch (error) {
-      console.error("SQL Error: ", error.message);
-      res.status(500).send({ success: false, message: "Internal server error" });
-  } finally {
-      connection.release();
-  }
-});
+
 
 
 ///new endpoints for admin

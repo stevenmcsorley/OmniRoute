@@ -9,23 +9,34 @@ const pool = mysql.createPool({
 
 async function fetchAssignments(companyId) {
   const [assignments] = await pool.query(
-    `SELECT * FROM Assignments JOIN Resources ON Assignments.ResourceId = Resources.Id WHERE Resources.CompanyId = ?`,
+    `SELECT * FROM Assignments WHERE CompanyId = ?`,
     [companyId]
   );
   return assignments;
 }
 
-async function updateAssignmentStatus(Id, Status) {
+async function updateAssignmentStatus(AssignmentId, status, CompanyId) {
+  if (AssignmentId === undefined || status === undefined || CompanyId === undefined) {
+    throw new Error('All parameters must be defined');
+  }
+
+  // Proceed with the update if all parameters are defined
   const [result] = await pool.execute(
-    `UPDATE Assignments SET Status = ? WHERE Id = ?`,
-    [Status, Id]
+    `UPDATE Assignments SET Status = ? WHERE AssignmentId = ? AND CompanyId = ?`,
+    [status, AssignmentId, CompanyId]
   );
   if (result.affectedRows > 0) {
-    const [updatedAssignments] = await pool.query(`SELECT * FROM Assignments WHERE Id = ?`, [Id]);
+    const [updatedAssignments] = await pool.query(
+      `SELECT * FROM Assignments WHERE AssignmentId = ? AND CompanyId = ?`,
+      [AssignmentId, CompanyId]
+    );
     return updatedAssignments[0];
   } else {
-    throw new Error('Assignment update failed');
+    throw new Error('No such assignment found for the given company, or update failed.');
   }
 }
+
+
+
 
 module.exports = { fetchAssignments, updateAssignmentStatus };
