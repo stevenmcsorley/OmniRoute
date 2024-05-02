@@ -14,15 +14,19 @@ import ReservationsAdmin from './components/ReservationsAdmin';
 // import AssignmentSubscription from './components/AssignmentSubscription';
 import NotFound from './components/NotFound';
 import './App.css';
+import { store } from './store';
+import ResourceList from './components/ResourceList';
+import { Provider } from 'react-redux';
 
 const App: React.FC = () => {
   return (
+    <Provider store={store}>
     <Router>
       <div>
         <nav>
           <Link to="/">Dashboard</Link> | 
           <Link to="/employees">Employees</Link> | 
-          <Link to="/resources">Resources</Link> |
+          <Link to="/resources">ResourceList</Link> |
           <Link to="/assignments">Assignments</Link> |
           <Link to="/reservations">Reservations</Link>
           {/* <Link to="/assignment-subscription">Assignment Subscription</Link> */}
@@ -30,7 +34,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/employees" element={<Employees />} />
-          <Route path="/resources" element={<ResourcesAdmin />} />
+          <Route path="/resources" element={<ResourceList />} />
           <Route path="/assignments" element={<AssignmentsAdmin />} />
           <Route path="/reservations" element={<ReservationsAdmin />} />
           {/* <Route path="/assignment-subscription" element={<AssignmentSubscription />} /> */}
@@ -38,6 +42,7 @@ const App: React.FC = () => {
         </Routes>
       </div>
     </Router>
+    </Provider>
   );
 };
 

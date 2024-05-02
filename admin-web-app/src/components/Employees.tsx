@@ -1,72 +1,99 @@
-import React, { useEffect, useState } from 'react';
-
-// Define the Employee interface based on your database schema
-interface Employee {
-  Id: number;
-  FirstName: string;
-  LastName: string;
-  Email: string;
-  Phone: string;
-  Role: string; // Assuming Role is a characteristic you want to display
-}
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../store";
+import { fetchEmployees } from "../store/employees/employeesSlice";
+import Table from "./Table"; 
+import { Column } from "./Table"; 
+import { Employee } from "../types/employeeTypes";
 
 const Employees: React.FC = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { employees, loading, error } = useSelector(
+    (state: RootState) => state.employees
+  );
+  const dispatch = useDispatch<AppDispatch>();
+
+  const [nameFilter, setNameFilter] = useState("");
+  const [emailFilter, setEmailFilter] = useState("");
+  const [phoneFilter, setPhoneFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   useEffect(() => {
-    fetchEmployees();
-  }, []);
+    dispatch(fetchEmployees());
+  }, [dispatch]);
 
-  const fetchEmployees = async () => {
-    try {
-      const response = await fetch('http://backend.localhost/api/employees');
-      if (!response.ok) {
-        throw new Error('Problem fetching employees');
-      }
-      const data = await response.json();
-      setEmployees(data);
-    } catch (error) {
-      console.error('Error fetching employees:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (loading) return <p>Loading employees...</p>;
+  if (error) return <p>Error: {error}</p>;
 
-  const addEmployee = async (employee: Omit<Employee, 'Id'>) => {
-    // Implement form submission logic here
-  };
+  const filteredEmployees = employees.filter(
+    (employee) =>
+      (nameFilter === "" ||
+        `${employee.FirstName} ${employee.LastName}`
+          .toLowerCase()
+          .includes(nameFilter.toLowerCase())) &&
+      (emailFilter === "" ||
+        employee.Email.toLowerCase().includes(emailFilter.toLowerCase())) &&
+      (phoneFilter === "" || employee.Phone.includes(phoneFilter)) &&
+      (roleFilter === "" ||
+        employee.Role.toLowerCase().includes(roleFilter.toLowerCase()))
+  );
 
-  const updateEmployee = async (id: number, employee: Omit<Employee, 'Id'>) => {
-    // Implement employee update logic here
-  };
+  const totalItems = filteredEmployees.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredEmployees.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
-  const deleteEmployee = async (id: number) => {
-    // Implement employee deletion logic here
-  };
+  const columns: Column<Employee>[] = [
+    { Header: "Name", accessor: "FirstName", isSortable: true },
+    { Header: "Email", accessor: "Email", isSortable: true },
+    { Header: "Phone", accessor: "Phone", isSortable: false },
+    { Header: "Role", accessor: "Role", isSortable: true },
+  ];
 
   return (
     <div>
       <h1>Employees</h1>
-      {loading ? (
-        <p>Loading employees...</p>
-      ) : (
-        <div>
-          {employees.map((employee) => (
-            <div key={employee.Id}>
-              <br />
-              <div>Name: {`${employee.FirstName} ${employee.LastName}`}</div>
-              <div>Email: {employee.Email}</div>
-              <div>Phone: {employee.Phone}</div>
-              <div>Role: {employee.Role}</div>
-              {/* Buttons and forms for updating and deleting employees */}
-            </div>
-          ))}
-        </div>
-      )}
-      {/* Form to add a new employee */}
+      <div>
+        <input
+          type="text"
+          placeholder="Filter by Name"
+          value={nameFilter}
+          onChange={(e) => setNameFilter(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Filter by Email"
+          value={emailFilter}
+          onChange={(e) => setEmailFilter(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Filter by Phone"
+          value={phoneFilter}
+          onChange={(e) => setPhoneFilter(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Filter by Role"
+          value={roleFilter}
+          onChange={(e) => setRoleFilter(e.target.value)}
+        />
+      </div>
+      <Table
+        columns={columns}
+        data={currentItems}
+        onPaginate={setCurrentPage}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        keyAccessor={"FirstName"}
+      />
     </div>
   );
-}
+};
 
 export default Employees;

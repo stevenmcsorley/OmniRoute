@@ -45,3 +45,102 @@ a{
     transform: rotate(360deg);
   }
 }
+
+
+/* Generic Input Styles */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea {
+    padding: 8px; /* Some padding */
+    margin: 8px 0; /* Some margin */
+    display: inline-block; /* Making sure it's properly displayed */
+    border: 1px solid #ccc; /* Gray border */
+    border-radius: 4px; /* Rounded borders */
+    box-sizing: border-box; /* Border-box sizing (the border and padding will not increase the width) */
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+textarea:focus {
+    border-color: #4A90E2; /* Highlight focus with a blue border */
+    outline: none; /* Remove default focus outline */
+}
+
+input[type="submit"],
+button {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 14px 20px; /* Some padding */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded borders */
+    cursor: pointer; /* Pointer/hand icon */
+    float: right; /* Align the button to the right */
+}
+
+input[type="submit"]:hover,
+button:hover {
+    background-color: #45a049; /* Darker shade of green for hover effect */
+}
+
+/* Styling for disabled input elements */
+input:disabled,
+button:disabled {
+    background-color: #cccccc; /* Gray background for disabled state */
+    color: #666666; /* Dark gray text color for disabled state */
+    cursor: not-allowed; /* Cursor to indicate disabled state */
+}
+
+
+/* Generic Label Styles */
+label {
+  display: block; /* Makes the label display on its own line */
+  margin-bottom: 5px; /* Space before the input field */
+  font-weight: 200; /* Makes text bold */
+  color: white; /* Dark grey color for text */
+}
+
+/* Specific styling for labels when used with checkboxes or radio buttons */
+label.checkbox,
+label.radio {
+  display: inline-block; /* Display inline for checkbox and radio labels */
+  margin-right: 10px; /* Space between multiple checkboxes or radios */
+  font-weight: normal; /* Normal font weight for less emphasis compared to main input labels */
+  cursor: pointer; /* Indicates that the label is clickable */
+}
+
+/* Hover effect for interactive labels */
+label.checkbox:hover,
+label.radio:hover {
+  color: #2a6496; /* Change color when hovering over checkbox or radio labels */
+}
+
+/* Styling for labels that are associated with required fields */
+label.required::after {
+  content: "*"; /* Add asterisk to indicate required fields */
+  color: red; /* Red color for the asterisk for visibility */
+  margin-left: 4px; /* Small space between label text and asterisk */
+}
+
+/* Styling for labels associated with disabled input fields */
+label.disabled {
+  color: #ccc; /* Light grey color to indicate the field is disabled */
+  cursor: not-allowed; /* Cursor to indicate the label is part of a disabled field */
+}
+
+
+/* Animation for background color change */
+@keyframes flash {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: green; } 
+}
+
+/* Apply this class to rows where data has changed */
+.flash-animation {
+  animation: flash 1s ease-out;
+}

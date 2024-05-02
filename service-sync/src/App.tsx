@@ -6,6 +6,7 @@ import Dashboard from './dashboard';
 function App() {
   return (
     <div className="App">
+      <h1>SERVICE SYNC</h1>
 <Dashboard />
     </div>
   );

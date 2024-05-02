@@ -54,6 +54,14 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<any | null>(null);
 
+  // set employee state from local storage
+  localStorage.setItem('employee', JSON.stringify({
+    EmployeeId: 1,
+    CompanyId: 4,
+    FirstName: 'John',
+    LastName: 'Doe',
+  }));
+
   useEffect(() => {
     const storedEmployee = localStorage.getItem('employee');
     if (storedEmployee) {

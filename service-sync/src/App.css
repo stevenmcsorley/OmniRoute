@@ -36,3 +36,21 @@
     transform: rotate(360deg);
   }
 }
+
+
+
+
+/* Animation for background color change */
+@keyframes flash {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: #ffff99; } /* Light yellow to highlight change */
+}
+
+/* Transition for smoother color change on status update */
+.table-row-update {
+  animation: flash 2s;
+}
+
+.status-cell {
+  transition: background-color 0.5s ease-in-out;
+}
